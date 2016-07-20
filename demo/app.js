@@ -1,6 +1,6 @@
 var express = require("express");
 var bodyParser = require("body-parser");
-
+var request = require('request');
 var Geetest = require('../gt-sdk');
 
 var geetest = new Geetest({
@@ -14,11 +14,19 @@ app.use(bodyParser.json());
 
 app.use(bodyParser.urlencoded({extended: true}));
 
-app.use(express.static('./'));
+app.use(express.static('demo'));
 app.get("/", function (req, res) {
     res.sendFile(__dirname + "/login.html");
 });
 
+app.get('/cross-domain', function(req, res) {
+    //so cross domain in router is ok which is not ok in front end
+    request('http://www.google.com', function (error, response, body) {
+        if (!error && response.statusCode == 200) {
+            console.log(body) // Show the HTML for the Google homepage.
+        }
+    })
+});
 // 极验接口
 app.get("/geetest/register", function (req, res) {
 

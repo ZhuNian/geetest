@@ -47,102 +47,22 @@
 <br><br>
 <hr>
 <br><br>
-<div class="popup">
-    <h2>弹出式Demo，使用ajax形式提交二次验证码所需的验证结果值</h2>
-    <br>
-    <p>
-        <labe>用户名：</labe>
-        <input class="inp" type="text" value="极验验证">
-    </p>
-    <br>
-    <p>
-        <label>密&nbsp;&nbsp;&nbsp;&nbsp;码：</label>
-        <input class="inp" type="password" value="123456">
-    </p>
-
-    <br>
-    <input class="btn" id="popup-submit" type="submit" value="提交">
-
-    <div id="popup-captcha"></div>
-</div>
-
 <!-- 为使用方便，直接使用jquery.js库 -->
 <script src="http://code.jquery.com/jquery-1.12.3.min.js"></script>
 <!-- 引入封装了failback的接口--initGeetest -->
-<script src="http://static.geetest.com/static/tools/gt.js"></script>
+<!--<script src="http://api.geetest.com/get.php"></script>-->
 
 <!-- 若是https，使用以下接口 -->
 <!-- <script src="https://code.jquery.com/jquery-1.12.3.min.js"></script> -->
 <!-- <script src="https://static.geetest.com/static/tools/gt.js"></script> -->
-
-<script>
-
-    var handlerPopup = function (captchaObj) {
-
-        $("#popup-submit").click(function () {
-            var validate = captchaObj.getValidate();
-            if (!validate) {
-                alert('请先完成验证！');
-                return;
-            }
-            $.ajax({
-                url: "/geetest/validate", // 进行二次验证
-                type: "post",
-                dataType: "json",
-                data: {
-                    // 二次验证所需的三个值
-                    geetest_challenge: validate.geetest_challenge,
-                    geetest_validate: validate.geetest_validate,
-                    geetest_seccode: validate.geetest_seccode
-                },
-                success: function (data) {
-
-                    if (data && (data.status === "success")) {
-
-                        $(document.body).html('<h1>登录成功</h1>');
-
-                    } else {
-
-                        $(document.body).html('<h1>登录失败</h1>');
-                    }
-                }
-            });
-        });
-
-        // 弹出式需要绑定触发验证码弹出按钮
-        captchaObj.bindOn("#popup-submit");
-
-        // 将验证码加到id为captcha的元素里
-        captchaObj.appendTo("#popup-captcha");
-
-        // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
-    };
-
-    $.ajax({
-        // 获取id，challenge，success（是否启用failback）
-        url: "/geetest/register?t=" + (new Date()).getTime(), // 加随机数防止缓存
-        type: "get",
-        dataType: "json",
-        success: function (data) {
-
-            // 使用initGeetest接口
-            // 参数1：配置参数
-            // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
-            initGeetest({
-                gt: data.gt,
-                challenge: data.challenge,
-                product: "popup", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
-                offline: !data.success // 表示用户后台检测极验服务器是否宕机，一般不需要关注
-                // 更多配置参数请参见：http://www.geetest.com/install/sections/idx-client-sdk.html#config
-            }, handlerPopup);
-        }
-    });
-
-</script>
+<!--<script src="./loadTest.js"></script>-->
+<!--<script>-->
+<!--alert('here is script');-->
+<!--</script>-->
 <br><br>
 <hr>
 <br><br>
-<form class="popup" action="/geetest/form-validate" method="post">
+<form class="popup" id="geetest">
     <h2>嵌入式Demo，使用表单形式提交二次验证所需的验证结果值</h2>
     <br>
     <p>
@@ -165,49 +85,151 @@
 </form>
 
 <script>
+//    var head = window.document.getElementsByTagName('head')[0];
+//    var script = window.document.createElement('script');
+//    script.src = "./loadTest.js";
+//    script.type = 'text/javascript';
+//    script.async = false;
+//    head.appendChild(script);
 
-    var handlerEmbed = function (captchaObj) {
+    alert('this is script');
 
-        $("#embed-submit").click(function (e) {
-            var validate = captchaObj.getValidate();
-            if (!validate) {
-                $("#notice")[0].className = "show";
-                setTimeout(function () {
-                    $("#notice")[0].className = "hide";
-                }, 2000);
-                e.preventDefault();
-            }
+//    var head = window.document.getElementsByTagName('head')[0];
+//    var script = window.document.createElement('script');
+//    script.src = "http://api.geetest.com/get.php";
+//    script.type = 'text/javascript';
+//    head.appendChild(script);
+
+
+        var global_mt;
+        //回调页面验证成功与失败回调函数
+        var gts = [
+//"6b4a3407099c242ded9731073264cff4", //国航常旅客卡
+//"d7f40b6bee3cee9d8ed7fbe7c054d9aa", //国航m站
+            "159218f8c4221df655d2f46df0df95bd", //国航
+            "7e985780ec536516b24eddb8fb6c786f", //东航
+            "e1702b75b6df0b03950ab3f5599a7517", //PPTV
+            "6afb5fbb4998793df3c0a75732dedbdc", //6.cn
+            "a10ea6a23a441db3d956598988dff3c4", //简书
+            "a1b643bc585aa6e22d4ba9bf9dd010c5", //斗鱼TV
+            "a40fd3b0d712165c5d13e6f747e948d4", //极验
+            "cddd9a3ffbb579d1e2023e2c76c817b9", //果壳
+            "fb4a018d7f7dcb27ce99a4c1d06826d3", //233网校
+            "703d2936f03e6235c9cb6383420f162c", //暴走漫画
+            "b4751232eebe1bb4c466cc5701b46d06", //猎豹浏览器论坛
+            "ad65952495e4da783fdf82ec4df9bf55", //数学尾巴
+            "c93ad8efb42a7598d40495d858e8b6ce", //小鱼网
+            "9d25127e2e132a7b32a06679ee8d44f7", //安极网
+            "273df89437f54dac2bfb5b69afe1c318", //户外资料网
+            "b70c50f156be15888506374cf1ce09f5", //人人都是产品经理
+            "1baabe8d55576df0d1ab6cd8e17516a4", //ZNDS
+            "c39d0c8c776b83183cbcc20104f3e0e2", //摇篮网
+            "09b5e7d54595d4b1432f40b490c71942" //猫途鹰TripAdvisor
+        ];
+        var geetest = new window.Geetest({
+            "gt": gts[Math.floor(Math.random()*gts.length)],
+            "product": "embed"
+        });
+        geetest.appendTo("#geetest");
+        geetest.onSuccess(function () {
+//            $.ajax({
+//                url: "http://58.83.130.99:9040/geetest-callback",
+//                data: {
+//                    "xpos" : global_mt[global_mt.length-1][0],
+//                    "mtdata" : JSON.stringify(global_mt)
+//                },
+//                error: function() {
+//                    window.parent.callback.error();
+//                },
+//                success: function (flag) {
+//                    console.info(flag);
+//                }
+//            });
+            geetest.refresh();//?????
+        });
+        $('.close').on('click', function() {
+            parent.$.removeMask();
         });
 
-        // 将验证码加到id为captcha的元素里
-        captchaObj.appendTo("#embed-captcha");
-
-        captchaObj.onReady(function () {
-            $("#wait")[0].className = "hide";
-        });
-
-        // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
+    script.onerror = function(e) {
+        script.onerror = null;
+        head.removeChild(script);
     };
-    $.ajax({
-        // 获取id，challenge，success（是否启用failback）
-        url: "/geetest/register?t=" + (new Date()).getTime(), // 加随机数防止缓存
-        type: "get",
-        dataType: "json",
-        success: function (data) {
+    /**
+     * @code:
+     //其它事件样例
+     geetest.onReady(function ()
+     {
+     console.info(arguments);
+     });
+     geetest.onStatusChange(function ()
+     {
+     console.info(arguments);
+     });
+     geetest.onError(function ()
+     {
+     console.info(arguments);
+     });
+     //强制刷新
+     geetest.refresh();
+     */
+//    var handlerEmbed = function (captchaObj) {
+//
+//        $("#embed-submit").click(function (e) {
+//            var validate = captchaObj.getValidate();
+//            if (!validate) {
+//                $("#notice")[0].className = "show";
+//                setTimeout(function () {
+//                    $("#notice")[0].className = "hide";
+//                }, 2000);
+//                e.preventDefault();
+//            }
+//        });
+//
+//        // 将验证码加到id为captcha的元素里
+//        captchaObj.appendTo("#embed-captcha");
+//
+//        captchaObj.onReady(function () {
+//            $("#wait")[0].className = "hide";
+//        });
+//
+//        // 更多接口参考：http://www.geetest.com/install/sections/idx-client-sdk.html
+//    };
+//    $.ajax({
+//        // 获取id，challenge，success（是否启用failback）
+//        url: "/geetest/register?t=" + (new Date()).getTime(), // 加随机数防止缓存
+//        type: "get",
+//        dataType: "json",
+//        success: function (data) {
+//
+//            // 使用initGeetest接口
+//            // 参数1：配置参数
+//            // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
+//            initGeetest({
+//                gt: data.gt,
+//                challenge: data.challenge,
+//                product: "embed", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
+//                offline: !data.success // 表示用户后台检测极验服务器是否宕机，一般不需要关注
+//                // 更多配置参数请参见：http://www.geetest.com/install/sections/idx-client-sdk.html#config
+//            }, handlerEmbed);
+//        }
+//    });
 
-            // 使用initGeetest接口
-            // 参数1：配置参数
-            // 参数2：回调，回调的第一个参数验证码对象，之后可以使用它做appendTo之类的事件
-            initGeetest({
-                gt: data.gt,
-                challenge: data.challenge,
-                product: "embed", // 产品形式，包括：float，embed，popup。注意只对PC版验证码有效
-                offline: !data.success // 表示用户后台检测极验服务器是否宕机，一般不需要关注
-                // 更多配置参数请参见：http://www.geetest.com/install/sections/idx-client-sdk.html#config
-            }, handlerEmbed);
+</script>
+
+<script>
+    //cross domain in front end is not ok
+    $.ajax({
+        url: "cross-domain",
+        data: {
+        },
+        error: function(err) {
+            window.parent.callback.error();
+        },
+        success: function (flag) {
+            console.info(flag);
         }
     });
-
 </script>
 </body>
 </html>
